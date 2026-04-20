@@ -160,7 +160,7 @@ const useStore = create((set, get) => ({
       const email = `${username.toLowerCase().trim()}@pacttracker.local`;
       const { data, error } = await supabase.auth.signUp({
         email: email,
-        password: 'initial_password_will_be_changed',
+        password: 'temp_placeholder_pin', // Will be replaced by setPassword
         options: {
           data: {
             username: username,
@@ -170,8 +170,13 @@ const useStore = create((set, get) => ({
       });
 
       if (error) throw error;
-      
-      set({ currentUser: username, isAuthenticated: true });
+      if (!data.user) throw new Error('No user returned from signup');
+
+      // Wait for profile to be created via trigger, then load data
+      // Small delay to allow DB trigger to fire
+      await new Promise(resolve => setTimeout(resolve, 800));
+      await get()._loadUserData(data.user);
+
       return true;
     } catch (error) {
       console.error('Signup error:', error.message);
