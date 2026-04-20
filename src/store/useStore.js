@@ -135,9 +135,10 @@ const useStore = create((set, get) => ({
   login: async (username, pin) => {
     try {
       const email = `${username.toLowerCase().trim()}@pacttracker.local`;
+      const saltedPassword = `${pin}_pacttracker_secure_salt`;
       const { data, error } = await supabase.auth.signInWithPassword({
         email: email,
-        password: pin
+        password: saltedPassword
       });
 
       if (error) throw error;
@@ -204,9 +205,10 @@ const useStore = create((set, get) => ({
   },
 
   setPassword: async (pin) => {
-    // PIN in our app is the Supabase password
+    // PIN in our app is the Supabase password (with salt to meet 6-char requirement)
+    const saltedPassword = `${pin}_pacttracker_secure_salt`;
     const { error } = await supabase.auth.updateUser({
-      password: pin
+      password: saltedPassword
     });
 
     if (error) {
