@@ -48,7 +48,7 @@ const Login = () => {
     }
   };
 
-  const handleSignupNameSubmit = () => {
+  const handleSignupNameSubmit = async () => {
     const trimmedName = nameInput.trim();
     if (!trimmedName) {
       setNameError('Vui lòng nhập tên của bạn');
